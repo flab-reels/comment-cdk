@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { SecretValue } from 'aws-cdk-lib';
-import { CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
+import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
 import { WorkshopPipelineStage } from './pipeline-stage';
 
@@ -22,7 +22,7 @@ export class Pipeline extends cdk.Stack {
         const pipeline = new CodePipeline(this, 'Pipeline', {
             pipelineName : 'WorkshopPipeline',
             crossAccountKeys : false,
-            synth : new ShellStep('Synth', { // it will be pointing the following github repo
+            synth : new CodeBuildStep('SynthStep', { // it will be pointing the following github repo
                 input : CodePipelineSource.gitHub('flab-reels/comment-cdk', 'main', {
                     authentication : SecretValue.secretsManager('pipeline-github-token'),
                 }),
