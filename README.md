@@ -12,3 +12,13 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
+
+## Prereq
+
+* AWS CLI : The AWS CLI allows you to interact with AWS services from a terminal session
+* AWS Account and User : To deploy our app, you’ll need access to an AWS account.
+
+
+* 
+
+FROM : https://cdkworkshop.com/
