@@ -18,6 +18,8 @@ export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
+        // change hehe -> commit again after the review
+
         // This is the main object which combines all the stages of the pipeline
         const pipeline = new codepipeline.Pipeline(this, 'comment-pipeline', {
             pipelineName : 'comment-pipeline',
