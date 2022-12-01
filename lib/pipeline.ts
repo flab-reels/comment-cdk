@@ -38,5 +38,8 @@ export class Pipeline extends cdk.Stack {
 
         const deploy = new WorkshopPipelineStage(this, 'Test')
         const deployStage = pipeline.addStage(deploy);
+
+        const deploy2 = new WorkshopPipelineStage(this, 'Test2')
+        const deployStage2 = pipeline.addStage(deploy2);
     }
 }
