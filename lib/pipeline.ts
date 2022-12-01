@@ -36,7 +36,7 @@ export class Pipeline extends cdk.Stack {
             })
         });
 
-        // const deploy = new WorkshopPipelineStage(this, 'Test')
-        // const deployStage = pipeline.addStage(deploy);
+        const deploy = new WorkshopPipelineStage(this, 'Test')
+        const deployStage = pipeline.addStage(deploy);
     }
 }
