@@ -7,10 +7,10 @@ export class InfraPipelineStage extends Stage {
         super(scope, id, props);
 
         new InfraStack(this, 'Infra', {
-            env :{
-                account : '087334185325',
-                region : 'ap-northeast-2'
-            }
+            // env :{
+            //     account : '087334185325',
+            //     region : 'ap-northeast-2'
+            // }
         });
     }
 }
