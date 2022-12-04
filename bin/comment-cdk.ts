@@ -27,11 +27,11 @@ const app = new cdk.App();
 //         region : 'ap-northeast-2'
 //     }
 // });
-new PipelineStack(app, 'PipelineStack', {
-    env :{
-        account : '087334185325',
-        region : 'ap-northeast-2'
-    }
-});
+// new PipelineStack(app, 'PipelineStack', {
+//     env :{
+//         account : '087334185325',
+//         region : 'ap-northeast-2'
+//     }
+// });
 
-// new Pipeline(app, 'PipelineStack', {});
+new Pipeline(app, 'PipelineStack', {});
