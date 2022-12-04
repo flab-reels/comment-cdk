@@ -6,6 +6,11 @@ export class InfraPipelineStage extends Stage {
     constructor(scope: Construct, id: string, props?: StageProps) {
         super(scope, id, props);
 
-        new InfraStack(this, 'Infra', {});
+        new InfraStack(this, 'Infra', {
+            env :{
+                account : '087334185325',
+                region : 'ap-northeast-2'
+            }
+        });
     }
 }

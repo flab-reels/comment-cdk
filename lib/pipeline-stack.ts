@@ -37,7 +37,7 @@ export class PipelineStack extends cdk.Stack {
         const sourceAction = new GitHubSourceAction({
             actionName : 'Comment_Github_Source',
             owner : 'flab-reels',
-            repo : 'comment-cdk',
+            repo : 'comment',
             oauthToken : SecretValue.secretsManager('pipeline-github-token'), // A GitHub OAuth token to use for authentication.
             branch : 'main',
             output : sourceOutput
@@ -59,88 +59,88 @@ export class PipelineStack extends cdk.Stack {
         //     repositoryName : 'comment-repository'
         // })
 
-        // const project = new PipelineProject(this, 'CommentProject', {
-        //     projectName : "CommentProject",
-        //     environment : {
-        //         buildImage : LinuxBuildImage.STANDARD_4_0,
-        //         privileged : true,
-        //     },
-        //     environmentVariables : {
-        //         ACCOUNT_ID: {
-        //             value: this.account
-        //         },
-        //         ACCOUNT_REGION: {
-        //             value: this.region
-        //         },
-        //         REPOSITORY_URI : {
-        //             value : ecr_repository.repositoryUri
-        //         },
-        //         IMAGE_TAG : {
-        //             value : 'latest'
-        //         }
-        //     },
-        //     buildSpec : BuildSpec.fromObject({
-        //         version : '0.2',
-        //         phases : {
-        //             install: {
-        //                 "runtime-versions": {
-        //                     java: 'corretto11',
-        //                 },
-        //             },
-        //             pre_build : {
-        //                 commands: [
-        //                     'echo Java version check',
-        //                     'java --version',
-        //                     'echo Logging in to Amazon ECR...',
-        //                     'aws ecr get-login-password --region $ACCOUNT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$ACCOUNT_REGION.amazonaws.com',
-        //                     'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)',
-        //                     //'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
-        //                     'chmod +x gradlew'
-        //                 ]
-        //             },
-        //             build: {
-        //                 commands: [
-        //                     'echo Build started on `date`',
-        //                     './gradlew bootBuildImage --imageName=$REPOSITORY_URI:$IMAGE_TAG',
-        //                     'export imageTag=$IMAGE_TAG',
-        //                     'echo imageTag=$IMAGE_TAG'
-        //                 ],
-        //             },
-        //             post_build: {
-        //                 commands: [
-        //                     'echo Pushing the Docker image...',
-        //                     'docker push  $REPOSITORY_URI:$IMAGE_TAG',
-        //                     "echo creating imagedefinitions.json dynamically",
-        //                     'printf \'{"ImageURI":"%s"}\' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json',
-        //                     'printf \'[{"name":"driver-service","imageUri":"%s"}]\' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json',
-        //                     'echo Pushing Docker Image completed on `date`'
-        //                 ]
-        //             }
-        //         },
-        //         artifacts: {
-        //             files: [
-        //                 'imageDetail.json',
-        //                 'imagedefinitions.json',
-        //             ]
-        //         }
-        //     })
-        // });
+        const project = new PipelineProject(this, 'CommentProject', {
+            projectName : "CommentProject",
+            environment : {
+                buildImage : LinuxBuildImage.STANDARD_4_0,
+                privileged : true,
+            },
+            environmentVariables : {
+                ACCOUNT_ID: {
+                    value: this.account
+                },
+                ACCOUNT_REGION: {
+                    value: this.region
+                },
+                // REPOSITORY_URI : {
+                //     value : ecr_repository.repositoryUri
+                // },
+                IMAGE_TAG : {
+                    value : 'latest'
+                }
+            },
+            buildSpec : BuildSpec.fromObject({
+                version : '0.2',
+                phases : {
+                    install: {
+                        "runtime-versions": {
+                            java: 'corretto11',
+                        },
+                    },
+                    pre_build : {
+                        commands: [
+                            'echo Java version check',
+                            'java --version',
+                            'echo Logging in to Amazon ECR...',
+                            'aws ecr get-login-password --region $ACCOUNT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$ACCOUNT_REGION.amazonaws.com',
+                            'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)',
+                            //'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
+                            'chmod +x gradlew'
+                        ]
+                    },
+                    build: {
+                        commands: [
+                            'echo Build started on `date`',
+                            './gradlew bootBuildImage --imageName=$REPOSITORY_URI:$IMAGE_TAG',
+                            'export imageTag=$IMAGE_TAG',
+                            'echo imageTag=$IMAGE_TAG'
+                        ],
+                    },
+                    post_build: {
+                        commands: [
+                            'echo Pushing the Docker image...',
+                            'docker push  $REPOSITORY_URI:$IMAGE_TAG',
+                            "echo creating imagedefinitions.json dynamically",
+                            'printf \'{"ImageURI":"%s"}\' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json',
+                            'printf \'[{"name":"driver-service","imageUri":"%s"}]\' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json',
+                            'echo Pushing Docker Image completed on `date`'
+                        ]
+                    }
+                },
+                artifacts: {
+                    files: [
+                        'imageDetail.json',
+                        'imagedefinitions.json',
+                    ]
+                }
+            })
+        });
 
-        // project.role?.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser'));
+        project.role?.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryPowerUser'));
 
-        // // initialize build action
-        // const buildOutput = new Artifact();
-        // const buildAction = new CodeBuildAction({
-        //     actionName : 'Comment_CodeBuild',
-        //     project : project,
-        //     input : sourceOutput,
-        //     outputs : [buildOutput]
-        // })
+        // initialize build action
+        const buildOutput = new Artifact();
+        const buildAction = new CodeBuildAction({
+            actionName : 'Comment_CodeBuild',
+            project : project,
+            input : sourceOutput,
+            outputs : [buildOutput]
+        })
 
-        // pipeline.addStage({
-        //     stageName : 'Build',
-        //     actions : [buildAction]
-        // })
+        pipeline.addStage({
+            stageName : 'Build',
+            actions : [buildAction]
+        })
         
         // // a vpc is a logically isolated portion of aws cloud within a region
         // // create your own vpc within aws account
