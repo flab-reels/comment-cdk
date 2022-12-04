@@ -21,17 +21,17 @@ const app = new cdk.App();
 
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
-new Pipeline(app,'CdkWorkshopPipelineStack', {
-    // env :{
-    //     account : '087334185325',
-    //     region : 'ap-northeast-2'
-    // }
-});
-// new PipelineStack(app, 'PipelineStack', {
+// new Pipeline(app,'CdkWorkshopPipelineStack', {
 //     env :{
 //         account : '087334185325',
 //         region : 'ap-northeast-2'
 //     }
 // });
+new PipelineStack(app, 'PipelineStack', {
+    env :{
+        account : '087334185325',
+        region : 'ap-northeast-2'
+    }
+});
 
 // new Pipeline(app, 'PipelineStack', {});
