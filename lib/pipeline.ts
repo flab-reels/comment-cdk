@@ -1,8 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { SecretValue } from 'aws-cdk-lib';
 import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
+import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import { Construct } from "constructs";
 import { WorkshopPipelineStage } from './pipeline-stage';
+import { InfraPipelineStage } from './infra-pipeline-stage';
 
 
 export class Pipeline extends cdk.Stack {
@@ -36,10 +38,8 @@ export class Pipeline extends cdk.Stack {
             })
         });
 
-        const deploy = new WorkshopPipelineStage(this, 'Test')
+        const deploy = new InfraPipelineStage(this, 'Test');
         const deployStage = pipeline.addStage(deploy);
 
-        const deploy2 = new WorkshopPipelineStage(this, 'Test2')
-        const deployStage2 = pipeline.addStage(deploy2);
     }
 }
