@@ -109,9 +109,9 @@ class DeployPipelineStack extends Stack {
                 ACCOUNT_REGION: {
                     value: this.region
                 },
-                // REPOSITORY_URI : {
-                //     value : ecr_repository.repositoryUri
-                // },
+                REPOSITORY_URI : {
+                    value : ecr_repository.repositoryUri
+                },
                 IMAGE_TAG : {
                     value : 'latest'
                 }
@@ -131,7 +131,7 @@ class DeployPipelineStack extends Stack {
                             'echo Logging in to Amazon ECR...',
                             'aws ecr get-login-password --region $ACCOUNT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$ACCOUNT_REGION.amazonaws.com',
                             'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)',
-                            //'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
+                            'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
                             'chmod +x gradlew'
                         ]
                     },
