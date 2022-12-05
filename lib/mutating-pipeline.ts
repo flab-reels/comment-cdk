@@ -2,8 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { App, SecretValue, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-import { WorkshopPipelineStage } from './pipeline-stage';
-import { InfraPipelineStage } from './infra-pipeline-stage';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';

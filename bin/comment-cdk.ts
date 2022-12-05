@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CommentCdkStack } from '../lib/comment-cdk-stack';
-import { PipelineStack } from '../lib/pipeline-stack';
 import { MutatingPipeline } from '../lib/mutating-pipeline';
 
 const app = new cdk.App();
