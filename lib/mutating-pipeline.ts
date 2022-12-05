@@ -93,7 +93,7 @@ class DeployPipelineStack extends Stack {
 
         // initialize repository
         const ecr_repository = new Repository(this, 'NewCommentImageRepository', {
-            repositoryName : 'new-comment-repository'
+            repositoryName : 'new-comment-repository-2'
         })
 
         const project = new PipelineProject(this, 'CommentProject', {
