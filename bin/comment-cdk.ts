@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { CommentCdkStack } from '../lib/comment-cdk-stack';
 import { PipelineStack } from '../lib/pipeline-stack';
-import { Pipeline } from '../lib/pipeline';
+import { MutatingPipeline } from '../lib/mutating-pipeline';
 
 const app = new cdk.App();
 // new CommentCdkStack(app, 'CommentCdkStack', {
@@ -34,4 +34,4 @@ const app = new cdk.App();
 //     }
 // });
 
-new Pipeline(app, 'PipelineStack', {});
+new MutatingPipeline(app, 'PipelineStack', {});

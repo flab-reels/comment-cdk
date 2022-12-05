@@ -51,9 +51,7 @@ export class MutatingPipeline extends cdk.Stack {
 class MyApplication extends Stage {
     constructor(scope: Construct, id: string, props?: StageProps) {
         super(scope, id, props);
-
-        const app = new App();
-        new DeployPipelineStack(app, 'NewDeploymentStack');
+        new DeployPipelineStack(this, 'NewDeploymentStack');
     }
 }
 
@@ -94,9 +92,9 @@ class DeployPipelineStack extends Stack {
         // Set up a codebuild project that compiles the source code, and produces artifacts ready to deploy
 
         // initialize repository
-        // const ecr_repository = new Repository(this, 'CommentImageRepository', {
-        //     repositoryName : 'comment-repository'
-        // })
+        const ecr_repository = new Repository(this, 'CommentImageRepository', {
+            repositoryName : 'comment-repository'
+        })
 
         const project = new PipelineProject(this, 'CommentProject', {
             projectName : "CommentProject",
