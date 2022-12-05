@@ -25,7 +25,7 @@ export class MutatingPipeline extends cdk.Stack {
         // Source  – It fetches the source of your CDK app from your forked GitHub repo 
         // and triggers the pipeline every time you push new commits to it.
         const cdkpipeline = new CodePipeline(this, 'Pipeline', {
-            pipelineName : 'WorkshopPipeline',
+            pipelineName : 'mutating-pipeline',
             crossAccountKeys : false,
             synth : new CodeBuildStep('SynthStep', { // it will be pointing the following github repo
                 input : CodePipelineSource.gitHub('flab-reels/comment-cdk', 'main', {
@@ -178,3 +178,156 @@ class DeployPipelineStack extends Stack {
         })
     }
 }
+
+// // a vpc is a logically isolated portion of aws cloud within a region
+// // create your own vpc within aws account
+// const vpc = new Vpc(this, 'comment-vpc', {
+//     // define CIDR block
+//     // vpc subnets will have a longer subnet subnet masking (16) than the CIDB block
+//     maxAzs : 2
+//     // ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+//     // natGateways : 0,
+//     // availabilityZones : ["ap-northeast-2a", "ap-northeast-2b", "ap-northeast-2c"],
+//     // subnetConfiguration: [
+//     //     {
+//     //         name: 'private-comment',
+//     //         subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+//     //         cidrMask: 24,
+//     //     },
+//     // ]
+// });
+
+// const nlb = new NetworkLoadBalancer(this, 'comment-nlb', {
+//     vpc,
+//     internetFacing: true
+// })
+
+// const listener = nlb.addListener('comment-nlb-listener', {
+//     port : 80,
+//     protocol : Protocol.TCP
+// })
+
+// const cluster = new Cluster(this, "comment-cluster", {
+//     vpc: vpc
+//   });
+
+// const fargateTaskDefinition = new FargateTaskDefinition(this, 'CommentTaskDef', {
+//     family : "comment-definition",
+//     memoryLimitMiB: 512,
+//     cpu: 256,
+// });
+
+// const container = fargateTaskDefinition.addContainer('CommentAppContainer', {
+//     containerName: "comment-container",
+//     image: ContainerImage.fromEcrRepository(ecr_repository),
+// });
+
+// container.addPortMappings({
+//     containerPort:8080,
+//     hostPort:8080,
+// })
+
+// // create security group
+// const service_sg = new SecurityGroup(this, 'comment-service-sg', {
+//     description: 'Security group for comment service',
+//     vpc: cluster.vpc,
+// });
+
+// service_sg.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
+// service_sg.addIngressRule(Peer.anyIpv4(), Port.tcp(8080));
+
+// const fargateService = new FargateService(this, 'comment-service', {
+//     cluster,
+//     taskDefinition : fargateTaskDefinition,
+//     serviceName : 'comment-service',
+//     securityGroups : [service_sg],
+//     deploymentController : {
+//         type : DeploymentControllerType.CODE_DEPLOY,
+//     }
+// })
+
+// // target group port doesnt seem to matter
+// const blueTargetGroup = listener.addTargets('comment-tg-blue', {
+//     targetGroupName : 'comment-tg-blue',
+//     port : 80,
+//     targets : [fargateService]
+// })
+
+// const greenTargetGroup = listener.addTargets('comment-tg-green', {
+//     targetGroupName : 'comment-tg-green',
+//     port : 8080
+// })
+
+// const deployGroup = new EcsDeploymentGroup(this, 'CommentBlueeGreenDG', {
+//     service : fargateService,
+//     blueGreenDeploymentConfig :{
+//         blueTargetGroup,
+//         greenTargetGroup,
+//         listener,
+//         terminationWaitTime : Duration.minutes(5),
+//     },
+//     deploymentConfig : EcsDeploymentConfig.ALL_AT_ONCE,
+// });
+
+// // deploy action
+// const deployAction =new EcsDeployAction({
+//     actionName : 'Comment_CodeDeploy',
+//     service : fargateService,
+//     imageFile : buildOutput.atPath('imageDetail.json')
+// })
+
+// pipeline.addStage({
+//     stageName : 'Deploy',
+//     actions : [deployAction]
+// })
+
+
+
+// const deploy = new EcsDeploymentGroup(this, 'BlueGreenDG', {
+//     fargateService,
+//     blueGreenDeploymentConfig: {
+//         blueTargetGroup,
+//         greenTargetGroup,
+//         listener,
+//     },
+// });
+
+// define dependency between infra and cicd
+// fargateService.node.addDependency(pipeline);
+
+// code below generates dependency which is anti-pattern
+// // The credential will be set as a global variable
+// new GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+//     accessToken: SecretValue.secretsManager('pipeline-github-token'),
+// });
+
+// const gitHubSource = Source.gitHub({
+//     owner: 'flab-reels',
+//     repo: 'comment',
+//     webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
+//     webhookFilters: [
+//       FilterGroup
+//         .inEventOf(EventAction.PUSH)
+//         .andBranchIs('main')
+//     ], // optional, by default all pushes and Pull Requests will trigger a build
+// });
+
+
+// new Project(this, 'CommentProject', {
+//     source: gitHubSource
+// })
+
+
+// const myService = new cdk.aws_ecs_patterns.NetworkLoadBalancedFargateService(this, 'Service', {
+//     cluster,
+//     memoryLimitMiB: 512,
+//     cpu: 256,
+//     taskImageOptions: {
+//         image: ContainerImage.fromEcrRepository(ecr_repository),
+//     },
+// });
+
+// // add health check
+// myService.targetGroup.configureHealthCheck({
+//     path: '/'
+// })
