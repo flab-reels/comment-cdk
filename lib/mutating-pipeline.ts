@@ -1,18 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
-import { SecretValue } from 'aws-cdk-lib';
+import { App, SecretValue, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
-import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import { Construct } from "constructs";
 import { WorkshopPipelineStage } from './pipeline-stage';
 import { InfraPipelineStage } from './infra-pipeline-stage';
-import { Artifact } from 'aws-cdk-lib/aws-codepipeline';
+import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { Repository } from 'aws-cdk-lib/aws-ecr';
 
 
-export class Pipeline extends cdk.Stack {
+
+export class MutatingPipeline extends cdk.Stack {
     constructor(scope : Construct, id: string, props?: cdk.StackProps) {
         // provide your CI/CD account info her
         super(scope, 'Pipeline');
@@ -43,9 +43,24 @@ export class Pipeline extends cdk.Stack {
             })
         });
 
-        // deploy codepipeline from cdk pipelines
-        // This is the main object which combines all the stages of the pipeline
-        const pipeline = new codepipeline.Pipeline(this, 'comment-pipeline', {
+        const myApp = new MyApplication(this, 'Deploy', {});
+        cdkpipeline.addStage(myApp);
+    }
+}
+
+class MyApplication extends Stage {
+    constructor(scope: Construct, id: string, props?: StageProps) {
+        super(scope, id, props);
+
+        const app = new App();
+        new DeployPipelineStack(app, 'NewDeploymentStack');
+    }
+}
+
+class DeployPipelineStack extends Stack {
+    constructor(scope: Construct, id: string, props?: StackProps) {
+        super(scope, id, props);
+        const pipeline = new Pipeline(this, 'comment-pipeline', {
             pipelineName : 'comment-pipeline',
             crossAccountKeys : false, // save 1$/month
         });
@@ -72,9 +87,16 @@ export class Pipeline extends cdk.Stack {
             actions : [sourceAction]
         })
 
-        const ecr_repository = new Repository(this, 'CommentImageRepository', {
-            repositoryName : 'comment-repository'
-        })
+
+        /**
+         * Build Stage
+         */
+        // Set up a codebuild project that compiles the source code, and produces artifacts ready to deploy
+
+        // initialize repository
+        // const ecr_repository = new Repository(this, 'CommentImageRepository', {
+        //     repositoryName : 'comment-repository'
+        // })
 
         const project = new PipelineProject(this, 'CommentProject', {
             projectName : "CommentProject",
@@ -89,9 +111,9 @@ export class Pipeline extends cdk.Stack {
                 ACCOUNT_REGION: {
                     value: this.region
                 },
-                REPOSITORY_URI : {
-                    value : ecr_repository.repositoryUri
-                },
+                // REPOSITORY_URI : {
+                //     value : ecr_repository.repositoryUri
+                // },
                 IMAGE_TAG : {
                     value : 'latest'
                 }
@@ -111,7 +133,7 @@ export class Pipeline extends cdk.Stack {
                             'echo Logging in to Amazon ECR...',
                             'aws ecr get-login-password --region $ACCOUNT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$ACCOUNT_REGION.amazonaws.com',
                             'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)',
-                            'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
+                            //'IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" \'{print $2}\')',
                             'chmod +x gradlew'
                         ]
                     },
@@ -158,6 +180,5 @@ export class Pipeline extends cdk.Stack {
             stageName : 'Build',
             actions : [buildAction]
         })
-
     }
 }
